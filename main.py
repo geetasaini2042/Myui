@@ -6,6 +6,45 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all domains
 
+@app.route("/result", methods=["GET"])
+def get_result():
+    roll_no = request.args.get("roll_no")
+    wb_id = request.args.get("wb_id")
+    year = request.args.get("year")
+
+    if not roll_no or not wb_id or not year:
+        return jsonify({"status": "failed", "message": "Missing parameters"}), 400
+
+    # Primary API
+    primary_url = (
+        f"https://result.appanalytics.co.in/api/get-result"
+        f"?tag=raj_10th_result&roll_no={roll_no}&year={year}&wb_id={wb_id}&source=1"
+    )
+
+    try:
+        primary_res = requests.get(primary_url)
+        primary_json = primary_res.json()
+
+        if primary_json.get("status") == "success":
+            return jsonify(primary_json), 200
+
+        # Fallback for wb_id = 89 and failed status
+        if primary_json.get("status") != "success" and wb_id == "89":
+            fallback_url = f"https://www.fastresult.in/board-results/rajresultapi12/api/get-12th-result?roll_no={roll_no}"
+            fallback_res = requests.get(fallback_url)
+            fallback_json = fallback_res.json()
+
+            # Ensure fallback also follows the same structure
+            if fallback_json.get("status") == "success":
+                return jsonify(fallback_json), 200
+            else:
+                return jsonify(fallback_json), 400
+
+        return jsonify(primary_json), 400
+
+    except Exception as e:
+        return jsonify({"status": "failed", "message": str(e)}), 500
+
 @app.route("/", methods=["GET"])
 def fetch_result():
     roll_no = request.args.get("roll_no")
