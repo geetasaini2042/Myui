@@ -18,7 +18,7 @@ def get_result():
 
     primary_url = (
         f"https://result.appanalytics.co.in/api/get-result"
-        f"?tag=raj_10th_result&roll_no={roll_no}&year={year}&wb_id=88&source=1"
+        f"?tag=raj_10th_result&roll_no={roll_no}&year={year}&wb_id={wb_id}&source=1"
     )
 
     primary_json = None
