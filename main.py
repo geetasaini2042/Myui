@@ -5,7 +5,7 @@ from flask_cors import CORS
 import json
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all domains
+CORS(app)
 
 @app.route("/result", methods=["GET"])
 def get_result():
@@ -21,48 +21,47 @@ def get_result():
         f"?tag=raj_10th_result&roll_no={roll_no}&year={year}&wb_id=88&source=1"
     )
 
+    primary_json = None
+    fallback_json = None
+
+    # Try primary API
     try:
-        primary_res = requests.get(primary_url)
+        primary_res = requests.get(primary_url, timeout=5)
+        if primary_res.status_code >= 500:
+            raise Exception("Server error on primary URL")
+
         try:
             primary_json = primary_res.json()
         except json.JSONDecodeError:
-            return jsonify({"status": "failed", "message": "Invalid JSON from primary URL"}), 502
+            raise Exception("Invalid JSON from primary URL")
 
         if primary_json.get("status") == "success":
             return jsonify(primary_json), 200
 
-        # Fallback for wb_id = 89
+    except Exception as e:
+        print("Primary request failed:", str(e))
+
+    # Try fallback based on wb_id
+    try:
         if wb_id == "89":
             fallback_url = f"https://www.fastresult.in/board-results/rajresultapi12/api/get-12th-result?roll_no={roll_no}"
-            fallback_res = requests.get(fallback_url)
-            try:
-                fallback_json = fallback_res.json()
-            except json.JSONDecodeError:
-                return jsonify({"status": "failed", "message": "Invalid JSON from 12th fallback URL"}), 502
-
-            if fallback_json.get("status") == "success":
-                return jsonify(fallback_json), 200
-            else:
-                return jsonify(fallback_json), 400
-
-        # Fallback for wb_id = 88
-        if wb_id == "88":
+        elif wb_id == "88":
             fallback_url = f"https://www.fastresult.in/board-results/rajresultapi10/api/get-10th-result?roll_no={roll_no}"
-            fallback_res = requests.get(fallback_url)
-            try:
-                fallback_json = fallback_res.json()
-            except json.JSONDecodeError:
-                return jsonify({"status": "failed", "message": "Invalid JSON from 10th fallback URL"}), 502
+        else:
+            return jsonify({"status": "failed", "message": "Invalid wb_id"}), 400
 
-            if fallback_json.get("status") == "success":
-                return jsonify(fallback_json), 200
-            else:
-                return jsonify(fallback_json), 400
+        fallback_res = requests.get(fallback_url, timeout=5)
+        fallback_json = fallback_res.json()
 
-        return jsonify(primary_json), 400
+        if fallback_json.get("status") == "success":
+            return jsonify(fallback_json), 200
+        else:
+            return jsonify(fallback_json), 400
 
     except Exception as e:
-        return jsonify({"status": "failed", "message": str(e)}), 500
+        return jsonify({"status": "failed", "message": f"Fallback also failed: {str(e)}"}), 502
+
+    return jsonify({"status": "failed", "message": "Result not found"}), 400
 
 
 @app.route("/", methods=["GET"])
@@ -84,9 +83,7 @@ def fetch_result():
         'Content-Type': 'application/x-www-form-urlencoded',
         'Origin': 'https://rj-12-science-result.indiaresults.com',
         'Referer': 'https://rj-12-science-result.indiaresults.com/rj/bser/class-12-science-result-2022/query.htm',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
+        'User-Agent': 'Mozilla/5.0',
     }
 
     try:
