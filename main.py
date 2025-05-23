@@ -39,8 +39,19 @@ def get_result():
                 return jsonify(fallback_json), 200
             else:
                 return jsonify(fallback_json), 400
+        if primary_json.get("status") != "success" and wb_id == "88":
+            fallback_url = f"https://www.fastresult.in/board-results/rajresultapi10/api/get-10th-result?roll_no={roll_no}"
+            fallback_res = requests.get(fallback_url)
+            fallback_json = fallback_res.json()
+
+            # Ensure fallback also follows the same structure
+            if fallback_json.get("status") == "success":
+                return jsonify(fallback_json), 200
+            else:
+                return jsonify(fallback_json), 400
 
         return jsonify(primary_json), 400
+    
 
     except Exception as e:
         return jsonify({"status": "failed", "message": str(e)}), 500
