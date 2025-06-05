@@ -7,6 +7,39 @@ import json
 app = Flask(__name__)
 CORS(app)
 
+# 1️⃣ Existing App Details Endpoint (by package)
+@app.route('/api/app-details', methods=['GET'])
+def app_details():
+    package_name = request.args.get('package')
+    from google_play_scraper import app
+    get_app = app
+    if not package_name:
+        return jsonify({"error": "Package name is required"}), 400
+
+    try:
+        result = get_app(package_name, lang='hi', country='us')
+        return result
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# 2️⃣ New App Search Endpoint (by query)
+@app.route('/api/app-search', methods=['GET'])
+def app_search():
+    from google_play_scraper import search
+    query = request.args.get('query')
+    if not query:
+        return jsonify({"error": "Query parameter is required"}), 400
+    try:
+       result = search(
+         query,
+         country="us",  # defaults to 'us'
+         n_hits=10  # defaults to 30 (= Google's maximum)
+          )
+      # print(result)
+       return result
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/result", methods=["GET"])
 def get_result():
     roll_no = request.args.get("roll_no")
