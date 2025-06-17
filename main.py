@@ -134,39 +134,8 @@ def fetch_result():
 
         if table:
             result_table = str(table)
-            safe_table = result_table.replace("\\", "\\\\").replace("`", "\\`").replace("</script>", "<\\/script>")
-            html = f"""
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src='//libtl.com/sdk.js' data-zone='9336786' data-sdk='show_9336786'></script>
-    <link rel="stylesheet" href="https://geetasaini2042.github.io/Results/python/assets/style.css">
-    <script>
-        window.resultHTML = `{safe_table}`;
-    </script>
-</head>
-<body>
-    {result_table}
-
-    <div class="footer-buttons">
-        <button class="icon-btn back-btn" onclick="history.back()" title="Back">
-            <svg viewBox="0 0 24 24" fill="white">
-                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-
-        <button class="icon-btn download-btn" onclick="showAdThenDownload()" title="Download">
-            <svg viewBox="0 0 24 24" fill="white">
-                <path d="M12 5v14M5 12l7 7 7-7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-    </div>
-
-    <script src="https://geetasaini2042.github.io/Results/python/assets/script.js"></script>
-</body>
-</html>
-"""
+            #safe_table = result_table.replace("\\", "\\\\").replace("`", "\\`").replace("</script>", "<\\/script>")
+            html = f"{result_table}"
 
             
             return make_response(html, 200)
