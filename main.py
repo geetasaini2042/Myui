@@ -7,7 +7,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# 1️⃣ Existing App Details Endpoint (by package)
+# 1ï¸âƒ£ Existing App Details Endpoint (by package)
 @app.route('/api/app-details', methods=['GET'])
 def app_details():
     package_name = request.args.get('package')
@@ -22,7 +22,7 @@ def app_details():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 2️⃣ New App Search Endpoint (by query)
+# 2ï¸âƒ£ New App Search Endpoint (by query)
 @app.route('/api/app-search', methods=['GET'])
 def app_search():
     from google_play_scraper import search
@@ -97,7 +97,6 @@ def get_result():
     return jsonify({"status": "failed", "message": "Result not found"}), 400
 
 
-
 @app.route("/", methods=["GET"])
 def fetch_result():
     roll_no = request.args.get("roll_no")
@@ -133,21 +132,9 @@ def fetch_result():
                     break
 
         if table:
-            result_table = str(table)
-            #safe_table = result_table.replace("\\", "\\\\").replace("`", "\\`").replace("</script>", "<\\/script>")
-            html = f"{result_table}"
-
-            
-            return make_response(html, 200)
+            return make_response(str(table), 200)
         else:
-            return make_response("""
-            <html>
-            <body style="background:white;font-family:sans-serif;text-align:center;margin-top:50px;">
-                <h2>❌ Result Not Declared! Please try again later.</h2>
-                <button onclick="history.back()" style="padding:10px 20px;background:#007bff;color:white;border:none;border-radius:5px;">🔙 Go Back</button>
-            </body>
-            </html>
-            """, 400)
+            return make_response("Result Not Declared! Please try again later.", 400)
 
     except Exception as e:
         return make_response(f"Error occurred: {str(e)}", 500)
