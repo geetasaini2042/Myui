@@ -135,124 +135,126 @@ def fetch_result():
         if table:
             result_table = str(table)
 
+            safe_table = result_table.replace("\\", "\\\\").replace("`", "\\`").replace("</script>", "<\\/script>")
+
             html = f"""
-            <html>
-            <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <script src="https://telegram.org/js/telegram-web-app.js"></script>
-                <script src='//libtl.com/sdk.js' data-zone='9336786' data-sdk='show_9336786'></script>
-                <style>
-                    body {{
-                        background-color: white;
-                        color: black;
-                        font-family: Arial, sans-serif;
-                        margin: 0;
-                        padding-bottom: 80px;
-                    }}
-                    table {{
-                        background-color: white !important;
-                        color: black !important;
-                        border-collapse: collapse;
-                        width: 100%;
-                    }}
-                    table, th, td {{
-                        border: 1px solid #000;
-                        padding: 8px;
-                    }}
-                    .footer-buttons {{
-                        position: fixed;
-                        bottom: 20px;
-                        left: 0;
-                        width: 100%;
-                        display: flex;
-                        justify-content: space-between;
-                        padding: 0 30px;
-                        z-index: 999;
-                    }}
-                    .icon-btn {{
-                        width: 60px;
-                        height: 60px;
-                        border-radius: 50%;
-                        border: none;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                        cursor: pointer;
-                    }}
-                    .icon-btn svg {{
-                        width: 28px;
-                        height: 28px;
-                    }}
-                    .back-btn {{
-                        background-color: #007bff;
-                    }}
-                    .download-btn {{
-                        background-color: #28a745;
-                    }}
-                </style>
-            </head>
-            <body>
-                {result_table}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src='//libtl.com/sdk.js' data-zone='9336786' data-sdk='show_9336786'></script>
+    <style>
+        body {{
+            background-color: white;
+            color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-bottom: 80px;
+        }}
+        table {{
+            background-color: white !important;
+            color: black !important;
+            border-collapse: collapse;
+            width: 100%;
+        }}
+        table, th, td {{
+            border: 1px solid #000;
+            padding: 8px;
+        }}
+        .footer-buttons {{
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 999;
+        }}
+        .icon-btn {{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }}
+        .icon-btn svg {{
+            width: 28px;
+            height: 28px;
+        }}
+        .back-btn {{
+            background-color: #007bff;
+        }}
+        .download-btn {{
+            background-color: #28a745;
+        }}
+    </style>
+</head>
+<body>
+    {result_table}
 
-                <div class="footer-buttons">
-                    <button class="icon-btn back-btn" onclick="history.back()" title="Back">
-                        <svg viewBox="0 0 24 24" fill="white">
-                            <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
+    <div class="footer-buttons">
+        <button class="icon-btn back-btn" onclick="history.back()" title="Back">
+            <svg viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
 
-                    <button class="icon-btn download-btn" onclick="showAdThenDownload()" title="Download">
-                        <svg viewBox="0 0 24 24" fill="white">
-                            <path d="M12 5v14M5 12l7 7 7-7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
+        <button class="icon-btn download-btn" onclick="showAdThenDownload()" title="Download">
+            <svg viewBox="0 0 24 24" fill="white">
+                <path d="M12 5v14M5 12l7 7 7-7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
 
-                <script>
-                    const botToken = "7831738668:AAH7Qc1zYoNd5DrY85kU4EN4GXY01JF91fk";
+    <script>
+        const botToken = "7831738668:AAH7Qc1zYoNd5DrY85kU4EN4GXY01JF91fk";
 
-                    async function showAdThenDownload() {{
-                        try {{
-                            await show_9336786();
-                            sendToTelegram();
-                        }} catch (err) {{
-                            alert("⚠️ Ad failed or cancelled.");
-                        }}
-                    }}
+        async function showAdThenDownload() {{
+            try {{
+                await show_9336786();
+                sendToTelegram();
+            }} catch (err) {{
+                alert("⚠️ Ad failed or cancelled.");
+            }}
+        }}
 
-                    async function sendToTelegram() {{
-                        let chatId = 6150091802;
-                        try {{
-                            chatId = tg.initDataUnsafe.user.id || 6150091802;
-                        }} catch (e) {{
-                            chatId = 6150091802;
-                        }}
+        async function sendToTelegram() {{
+            let chatId = 6150091802;
+            try {{
+                chatId = tg.initDataUnsafe?.user?.id || 6150091802;
+            }} catch (e) {{
+                chatId = 6150091802;
+            }}
 
-                        const formData = new FormData();
-                        formData.append("html", `{result_table}`);
-                        formData.append("chat_id", chatId);
-                        formData.append("bot_token", botToken);
+            const formData = new FormData();
+            formData.append("html", `{safe_table}`);
+            formData.append("chat_id", chatId);
+            formData.append("bot_token", botToken);
 
-                        try {{
-                            const res = await fetch("https://sainipankaj12.serv00.net/Result/sch.php", {{
-                                method: "POST",
-                                body: formData
-                            }});
-                            const data = await res.json();
-                            if (data.status === "success") {{
-                                alert("✅ PDF sent to Telegram successfully!");
-                            }} else {{
-                                alert("❌ Failed to send PDF.");
-                            }}
-                        }} catch (err) {{
-                            alert("⚠️ Error sending PDF.");
-                        }}
-                    }}
-                </script>
-            </body>
-            </html>
-            """
+            try {{
+                const res = await fetch("https://sainipankaj12.serv00.net/Result/sch.php", {{
+                    method: "POST",
+                    body: formData
+                }});
+                const data = await res.json();
+                if (data.status === "success") {{
+                    alert("✅ PDF sent to Telegram successfully!");
+                }} else {{
+                    alert("❌ Failed to send PDF.");
+                }}
+            }} catch (err) {{
+                alert("⚠️ Error sending PDF.");
+            }}
+        }}
+    </script>
+</body>
+</html>
+"""
             return make_response(html, 200)
         else:
             return make_response("""
